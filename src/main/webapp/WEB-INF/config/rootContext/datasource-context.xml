@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="jdbc/ldt"/>
+		<property name="resourceRef" value="true"/>
+	</bean>
+
+<!--
+	<bean id="dataSource" class="net.sf.log4jdbc.mybatis.jdbcapi.DataSourceSpy">
+		<constructor-arg ref="dataSourcebean" />
+        &lt;!&ndash;<property name="logFormatter">&ndash;&gt;
+            &lt;!&ndash;<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">&ndash;&gt;
+                &lt;!&ndash;<property name="loggingType" value="MULTI_LINE" />&ndash;&gt;
+                &lt;!&ndash;<property name="sqlPrefix" value="SQL         :  "/>&ndash;&gt;
+            &lt;!&ndash;</bean>&ndash;&gt;
+        &lt;!&ndash;</property>&ndash;&gt;
+	</bean>
+-->
+
+
+
+	<!-- ============================================================================================== -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+	    <property name="configLocation" value="WEB-INF/config/rootContext/mybatis-config.xml" />
+ 		<property name="mapperLocations">
+			<list>
+				<value>classpath:mybatis/sqlmap/test/test.xml</value>
+			</list>
+		</property>
+    	<!-- ## mapperLocations 설정은 msp.xml로 이동 함. 더이상 이곳에서 설정하지 않음. ## -->
+    </bean>
+	<!-- ============================================================================================== -->
+    
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+  		<constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+  	</bean>
+    
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+	    <qualifier value="transactionManager"/>
+    </bean>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" rollback-for="Exception" propagation="REQUIRED" /><!-- insert* 함수에서 Exception발생시 롤백 -->
+			<tx:method name="update*" rollback-for="Exception" propagation="REQUIRED" /><!-- update* 함수에서 Exception발생시 롤백 -->
+			<tx:method name="delete*" rollback-for="Exception" propagation="REQUIRED" /><!-- delete* 함수에서 Exception발생시 롤백 -->
+			<tx:method name="modify*" rollback-for="Exception" propagation="REQUIRED" /><!-- modify* 함수에서 Exception발생시 롤백 -->
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- advice의 aop pointcut 설정  -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* *..*Service.*(..))" /><!-- 모든 Service가 포함된 메소드 -->
+	</aop:config>
+
+    <!-- 샘플 DB 연동 설정  -->
+    <!--<import resource="sample-datasource-context.xml"/>-->
+	
+</beans>

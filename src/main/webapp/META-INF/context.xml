@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/">
+    <Resource   name="jdbc/ldt"
+                auth="Container"
+                type="javax.sql.DataSource"
+                minIdle="100"
+                maxIdle="500"
+                username="ldtuser"
+                password="1q2w3e4r"
+                driverClassName="org.mariadb.jdbc.Driver"
+                url="jdbc:mysql://192.168.1.6:3306/db_ldt"/>
+</Context>

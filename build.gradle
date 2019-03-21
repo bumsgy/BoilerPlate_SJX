@@ -1,0 +1,192 @@
+/**
+ * war plugin
+ * 프로젝트에서 war plugin을 사용하려면 build.gradle 파일에 다음과 같이 설정하면 된다.
+ * war plugin은 java plugin과 의존관계에 있다. 따라서 빌드 스크립트에 war plugin을 추가하면 java plugin은 별도로 추가하지 않아도 된다.
+ * https://hermeslog.tistory.com/270
+ */
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+
+/**
+ * gradle에 있는 기능 그래도 빌드 할 경우에는 buildscript가 필요없다.
+ * 외부 라이브러리 등을 선언하여 사용해야 할 때 필요.
+ * (( https://araikuma.tistory.com/466?category=782572 참조 ))
+ */
+/*
+buildscript {
+    ext {
+        spring_version = '5.1.3.RELEASE'
+        json_version = '2.9.7'
+    }
+    dependencies {
+    }
+    repositories {
+        jcenter()
+    }
+}
+*/
+
+ext {
+    spring_version = '5.1.3.RELEASE'
+    json_version = '2.9.7'
+}
+
+repositories {
+    jcenter()
+}
+
+group 'BSSeo'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+//repositories {
+//    // jcenter는 bintray.com이 운영하는 Maven Repository
+//    // mavenCentral 는 maven이 운영 : 개발자 친화적이지 않아, 라이브러리 업로드가 힘들다고 함. 구글은 jcenter 사용. .... 그럼 google() 은?
+//    // google()은 google이 운영
+//    mavenCentral()
+//}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    /**
+     * 작성순서
+     * @see         : JAR URL
+     * @dependency  : 추가 시 의존성에 따라, 같이 추가되는 jar
+     * @description : 나름 파악한 것에 대한 의견
+     * 항목이 비어 있다면 내용이 없는것. ??? 면 미확인 상태.
+     */
+
+    /** ********************************************************************** */
+    /** 기본 springframework Setting Start *********************************** */
+    /** ********************************************************************** */
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-core
+    // @dependency  : annotation 13.0, jcl 5.1.3
+    // @description : 기본 spring core
+    implementation group: 'org.springframework',    name: 'spring-core',               version: spring_version
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-beans
+    // @dependency  : beans, core, jcl
+    // @description : 이미 core에 의해 등록되어 있어서 주석 처리
+//    implementation group: 'org.springframework',    name: 'spring-beans',              version: '5.1.3.RELEASE'
+
+    // @see         :
+    // @dependency  : aop, beans, core, jcl
+    // @description :
+    implementation group: 'org.springframework',    name: 'spring-aop',                version: spring_version
+
+    // @see         :
+    // @dependency  : core, jcl
+    // @description :
+    implementation group: 'org.springframework',    name: 'spring-expression',         version: spring_version
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-context
+    // @dependency  : aop, beans, expression, core, jcl
+    // @description : context 를 설정하는 등의 기능을 하기 위함.
+    implementation group: 'org.springframework',    name: 'spring-context',            version: spring_version
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-context
+    // @dependency  : aop, beans, expression, jcl, context
+    // @description : context 를 설정하는 등의 기능을 하기 위함.
+    implementation group: 'org.springframework',    name: 'spring-context-support',    version: spring_version
+
+    // @see         :
+    // @dependency  : beans, core, jcl
+    // @description :
+    implementation group: 'org.springframework',    name: 'spring-context-support',    version: spring_version
+
+
+    implementation group: 'org.springframework',    name: 'spring-tx',                 version: spring_version
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-jdbc
+    // @dependency  : beans, core, jcl, jdbc, tx
+    // @description : context 를 설정하는 등의 기능을 하기 위함.
+    implementation group: 'org.springframework',    name: 'spring-jdbc',               version: spring_version
+
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-jdbc
+    // @dependency  : beans, core, jcl, jdbc, tx
+    // @description : orm(Object-relational mapping)을 위함. 이는 JPA에서 사용하게 될 듯. 빼 봅시다.
+//    implementation group: 'org.springframework',    name: 'spring-orm',                version: spring_version
+
+    // @see         :
+    // @dependency  : beans, core, jcl, tx
+    // @description :
+    implementation group: 'org.springframework',    name: 'spring-web',                version: spring_version
+
+    // @see         : https://mvnrepository.com/artifact/org.springframework/spring-webmvc
+    // @dependency  : aop, beans, context, core, expression, jcl, web
+    // @description :
+    implementation group: 'org.springframework',    name: 'spring-webmvc',             version: spring_version
+    /** ********************************************************************** */
+    /** 기본 springframework Setting  End  *********************************** */
+    /** ********************************************************************** */
+
+    /** ********************************************************************** */
+    /** logging Setting Start ************************************************ */
+    /** ********************************************************************** */
+    // implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
+    // slf4j가 의존성이 있는지 모르겠음. 일단 주석해 놓고 해 봄 -> 의존성 없는듯. // commons-logging
+
+    // implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25' // slf4j-api
+
+    // @see         :
+    // @dependency  : logback-core, logback-classic, slf4j-api
+    // @description :
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    /** ********************************************************************** */
+    /** logging Setting  End  ************************************************ */
+    /** ********************************************************************** */
+
+    /** ********************************************************************** */
+    /** JSON Setting Start *************************************************** */
+    /** ********************************************************************** */
+    // @see         :
+    // @dependency  :
+    // @description :
+    implementation group: 'com.fasterxml.jackson.core',      name: 'jackson-annotations',        version: json_version
+
+    // @see         :
+    // @dependency  :
+    // @description :
+    implementation group: 'com.fasterxml.jackson.core',      name: 'jackson-core',               version: json_version
+
+    // @see         :
+    // @dependency  :
+    // @description : @Responsebody 시 각 값을 json 형식으로 변환해 주는데, 필요함
+    implementation group: 'com.fasterxml.jackson.core',      name: 'jackson-databind',           version: json_version
+
+    /** ********************************************************************** */
+    /** JSON Setting  End  *************************************************** */
+    /** ********************************************************************** */
+
+    // @see         :
+    // @dependency  :
+    // @description : jsp 를 사용 할 경우, 필요.
+    compile group: 'javax.servlet.jsp.jstl', name: 'javax.servlet.jsp.jstl-api', version: '1.2.2'
+
+
+    /** ********************************************************************** */
+    /** DB 관련 Setting Start ************************************************ */
+    /** ********************************************************************** */
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.3.0'
+
+    implementation group: 'org.mybatis', name: 'mybatis', version: '3.4.6'
+    implementation group: 'org.mybatis', name: 'mybatis-spring', version: '1.3.2'
+    /** ********************************************************************** */
+    /** DB 관련 Setting  End  ************************************************ */
+    /** ********************************************************************** */
+
+
+    implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.2'
+
+    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+    // commons-fileupload
+
+    implementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
+
+    // httpServletRequest 를 위함.
+    providedCompile group: 'org.apache.tomcat', name: 'tomcat-catalina', version:'8.0.53'
+}
